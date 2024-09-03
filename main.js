@@ -3,7 +3,7 @@ import "./style.css";
 const form = document.querySelector("form");
 
 form.addEventListener("submit", async (e) => {
-  showSpinner()
+  showSpinner();
   e.preventDefault();
   const data = new FormData(form);
   const response = await fetch("http://localhost:8080/dream", {
@@ -15,11 +15,16 @@ form.addEventListener("submit", async (e) => {
       prompt: data.get("prompt"),
     }),
   });
-  const { image } = await response.json();
-
-  const result = document.querySelector("#result");
-  result.innerHTML = `<img src="${image}" width='512' />`;
-  hideSpinner()
+  if (response.ok) {
+    const { image } = await response.json();
+    const result = document.querySelector("#result");
+    result.innerHTML = `<img src="${image}" width='512' />`;
+  } else {
+    const err = await response.text();
+    alert(err);
+    console.error(err);
+  }
+  hideSpinner();
 });
 
 function showSpinner() {
